@@ -1,0 +1,76 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function owner(userId) {
+      return signedIn() && request.auth.uid == userId;
+    }
+
+    function safeString(value, min, max) {
+      return value is string && value.size() >= min && value.size() <= max;
+    }
+
+    function optionalString(value, max) {
+      return value == null || (value is string && value.size() <= max);
+    }
+
+    function optionalInt(value, min, max) {
+      return value == null || (value is int && value >= min && value <= max);
+    }
+
+    function optionalList(value, maxItems) {
+      return value == null || (value is list && value.size() <= maxItems);
+    }
+
+    match /users/{userId} {
+      allow read: if owner(userId);
+
+      allow create, update: if owner(userId)
+        && request.resource.data.keys().hasOnly(['username', 'email', 'createdAt'])
+        && safeString(request.resource.data.username, 1, 40)
+        && safeString(request.resource.data.email, 5, 120);
+
+      allow delete: if false;
+
+      match /favorites/{recipeId} {
+        allow read, delete: if owner(userId);
+
+        allow create, update: if owner(userId)
+          && request.resource.data.keys().hasOnly(['recipeId', 'title', 'image', 'category', 'source', 'addedAt'])
+          && safeString(request.resource.data.recipeId, 1, 40)
+          && safeString(request.resource.data.title, 1, 120)
+          && safeString(request.resource.data.image, 8, 500)
+          && optionalString(request.resource.data.category, 60)
+          && request.resource.data.source == 'themealdb';
+      }
+
+      match /customRecipes/{recipeDocId} {
+        allow read, delete: if owner(userId);
+
+        allow create, update: if owner(userId)
+          && request.resource.data.keys().hasOnly([
+            'title',
+            'description',
+            'ingredients',
+            'instructions',
+            'prepTime',
+            'servings',
+            'tags',
+            'createdAt'
+          ])
+          && safeString(request.resource.data.title, 1, 80)
+          && optionalString(request.resource.data.description, 180)
+          && request.resource.data.ingredients is list
+          && request.resource.data.ingredients.size() > 0
+          && request.resource.data.ingredients.size() <= 25
+          && safeString(request.resource.data.instructions, 1, 4000)
+          && optionalInt(request.resource.data.prepTime, 1, 1440)
+          && optionalInt(request.resource.data.servings, 1, 50)
+          && optionalList(request.resource.data.tags, 8);
+      }
+    }
+  }
+}

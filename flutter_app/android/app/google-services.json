@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1060207776877",
+    "project_id": "myfluttercookbook",
+    "storage_bucket": "myfluttercookbook.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1060207776877:android:6c998e2054fc57acb2db64",
+        "android_client_info": {
+          "package_name": "com.ethan.flutter_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCnFPv-QV0DUKHzF5JnRs1wNIFESHQquMg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
