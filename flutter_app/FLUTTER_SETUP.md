@@ -6,20 +6,17 @@ This Flutter app lives in `flutter_app/` so the original web/Firebase files rema
 
 ```bash
 cd flutter_app
-flutter run -d chrome
-# optional override:
-# flutter run -d chrome --dart-define=RECAPTCHA_ENTERPRISE_KEY=YOUR_RECAPTCHA_ENTERPRISE_SITE_KEY
+cp firebase.env.example.json firebase.env.json
+# fill in your Firebase + App Check values, then run:
+flutter run -d chrome --dart-define-from-file=firebase.env.json
 ```
 
 ## Build for hosting
 
 ```bash
 cd flutter_app
-flutter build web --release
+flutter build web --release --dart-define-from-file=firebase.env.json
 firebase deploy --project myfluttercookbook --config firebase.flutter.json
-
-# optional override:
-# flutter build web --release --dart-define=RECAPTCHA_ENTERPRISE_KEY=YOUR_RECAPTCHA_ENTERPRISE_SITE_KEY
 ```
 
 ## Secure mobile release build

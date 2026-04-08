@@ -15,10 +15,7 @@ Future<void> main() async {
 
 Future<void> _configureAppCheck() async {
   try {
-    const siteKey = String.fromEnvironment(
-      'RECAPTCHA_ENTERPRISE_KEY',
-      defaultValue: '6Le4ia0sAAAAAG9N9tnFPwoo49eKjASl3d4XLhvn',
-    );
+    const siteKey = String.fromEnvironment('RECAPTCHA_ENTERPRISE_KEY');
 
     if (kIsWeb && siteKey.isEmpty) {
       debugPrint(

@@ -28,16 +28,24 @@ A secure Flutter rebuild of the cookbook app using **TheMealDB** and **Firebase*
 
 ## Run locally
 
+1. Copy the example config and fill in your own Firebase values:
+
 ```bash
 cd flutter_app
-flutter run -d chrome
+cp firebase.env.example.json firebase.env.json
+```
+
+2. Start the app with local defines:
+
+```bash
+flutter run -d chrome --dart-define-from-file=firebase.env.json
 ```
 
 ## Deploy
 
 ```bash
 cd flutter_app
-flutter build web --release
+flutter build web --release --dart-define-from-file=firebase.env.json
 firebase deploy --project myfluttercookbook --config firebase.flutter.json
 ```
 

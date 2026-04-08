@@ -17,12 +17,27 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
+      _ensureConfigured(
+        web,
+        platform: 'web',
+        requiredVariables: _FirebaseEnv.webRequiredVariables,
+      );
       return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
+        _ensureConfigured(
+          android,
+          platform: 'android',
+          requiredVariables: _FirebaseEnv.androidRequiredVariables,
+        );
         return android;
       case TargetPlatform.iOS:
+        _ensureConfigured(
+          ios,
+          platform: 'ios',
+          requiredVariables: _FirebaseEnv.iosRequiredVariables,
+        );
         return ios;
       case TargetPlatform.macOS:
         throw UnsupportedError(
@@ -47,28 +62,109 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAGu9ahGFfdIBV0pth3XUl5rY88xb4c5LU',
-    appId: '1:1060207776877:web:cf0b7f4456bffebfb2db64',
-    messagingSenderId: '1060207776877',
-    projectId: 'myfluttercookbook',
-    authDomain: 'myfluttercookbook.firebaseapp.com',
-    storageBucket: 'myfluttercookbook.firebasestorage.app',
+    apiKey: _FirebaseEnv.webApiKey,
+    appId: _FirebaseEnv.webAppId,
+    messagingSenderId: _FirebaseEnv.messagingSenderId,
+    projectId: _FirebaseEnv.projectId,
+    authDomain: _FirebaseEnv.authDomain,
+    storageBucket: _FirebaseEnv.storageBucket,
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCnFPv-QV0DUKHzF5JnRs1wNIFESHQquMg',
-    appId: '1:1060207776877:android:6c998e2054fc57acb2db64',
-    messagingSenderId: '1060207776877',
-    projectId: 'myfluttercookbook',
-    storageBucket: 'myfluttercookbook.firebasestorage.app',
+    apiKey: _FirebaseEnv.androidApiKey,
+    appId: _FirebaseEnv.androidAppId,
+    messagingSenderId: _FirebaseEnv.messagingSenderId,
+    projectId: _FirebaseEnv.projectId,
+    storageBucket: _FirebaseEnv.storageBucket,
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDCMZxckkVBUv8URlJ7GzWN8qHcaGAXnek',
-    appId: '1:1060207776877:ios:f93a661448135487b2db64',
-    messagingSenderId: '1060207776877',
-    projectId: 'myfluttercookbook',
-    storageBucket: 'myfluttercookbook.firebasestorage.app',
-    iosBundleId: 'com.ethan.flutterApp',
+    apiKey: _FirebaseEnv.iosApiKey,
+    appId: _FirebaseEnv.iosAppId,
+    messagingSenderId: _FirebaseEnv.messagingSenderId,
+    projectId: _FirebaseEnv.projectId,
+    storageBucket: _FirebaseEnv.storageBucket,
+    iosBundleId: _FirebaseEnv.iosBundleId,
   );
+
+  static void _ensureConfigured(
+    FirebaseOptions options, {
+    required String platform,
+    required List<String> requiredVariables,
+  }) {
+    final missing = <String>[
+      if (options.apiKey.isEmpty) requiredVariables[0],
+      if (options.appId.isEmpty) requiredVariables[1],
+      if (options.messagingSenderId.isEmpty) requiredVariables[2],
+      if (options.projectId.isEmpty) requiredVariables[3],
+      if (options.storageBucket?.isEmpty ?? true) requiredVariables[4],
+      if (platform == 'web' && (options.authDomain?.isEmpty ?? true))
+        requiredVariables[5],
+      if (platform == 'ios' && (options.iosBundleId?.isEmpty ?? true))
+        requiredVariables[5],
+    ];
+
+    if (missing.isNotEmpty) {
+      throw UnsupportedError(
+        'Firebase is not configured for $platform. Copy '
+        '`firebase.env.example.json` to `firebase.env.json`, fill in your '
+        'values, and run Flutter with '
+        '`--dart-define-from-file=firebase.env.json`. Missing: '
+        '${missing.join(', ')}',
+      );
+    }
+  }
+}
+
+class _FirebaseEnv {
+  static const String authDomain = String.fromEnvironment('FIREBASE_AUTH_DOMAIN');
+  static const String projectId = String.fromEnvironment('FIREBASE_PROJECT_ID');
+  static const String storageBucket = String.fromEnvironment(
+    'FIREBASE_STORAGE_BUCKET',
+  );
+  static const String messagingSenderId = String.fromEnvironment(
+    'FIREBASE_MESSAGING_SENDER_ID',
+  );
+
+  static const String webApiKey = String.fromEnvironment('FIREBASE_WEB_API_KEY');
+  static const String webAppId = String.fromEnvironment('FIREBASE_WEB_APP_ID');
+
+  static const String androidApiKey = String.fromEnvironment(
+    'FIREBASE_ANDROID_API_KEY',
+  );
+  static const String androidAppId = String.fromEnvironment(
+    'FIREBASE_ANDROID_APP_ID',
+  );
+
+  static const String iosApiKey = String.fromEnvironment('FIREBASE_IOS_API_KEY');
+  static const String iosAppId = String.fromEnvironment('FIREBASE_IOS_APP_ID');
+  static const String iosBundleId = String.fromEnvironment(
+    'FIREBASE_IOS_BUNDLE_ID',
+  );
+
+  static const List<String> webRequiredVariables = <String>[
+    'FIREBASE_WEB_API_KEY',
+    'FIREBASE_WEB_APP_ID',
+    'FIREBASE_MESSAGING_SENDER_ID',
+    'FIREBASE_PROJECT_ID',
+    'FIREBASE_STORAGE_BUCKET',
+    'FIREBASE_AUTH_DOMAIN',
+  ];
+
+  static const List<String> androidRequiredVariables = <String>[
+    'FIREBASE_ANDROID_API_KEY',
+    'FIREBASE_ANDROID_APP_ID',
+    'FIREBASE_MESSAGING_SENDER_ID',
+    'FIREBASE_PROJECT_ID',
+    'FIREBASE_STORAGE_BUCKET',
+  ];
+
+  static const List<String> iosRequiredVariables = <String>[
+    'FIREBASE_IOS_API_KEY',
+    'FIREBASE_IOS_APP_ID',
+    'FIREBASE_MESSAGING_SENDER_ID',
+    'FIREBASE_PROJECT_ID',
+    'FIREBASE_STORAGE_BUCKET',
+    'FIREBASE_IOS_BUNDLE_ID',
+  ];
 }
