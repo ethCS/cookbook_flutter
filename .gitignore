@@ -1,0 +1,19 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+build/
+
+# misc
+.DS_Store
+
+# env
+.env
+
+# logs
+npm-debug.log*
+
+# flutter
+.dart_tool/
+.packages
