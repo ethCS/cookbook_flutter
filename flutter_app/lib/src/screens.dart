@@ -9,7 +9,7 @@ import 'services.dart';
 void _warmMealImages(BuildContext context, Iterable<Meal> meals) {
   WidgetsBinding.instance.addPostFrameCallback((_) {
     for (final meal in meals.take(12)) {
-      final imageUrl = meal.imageUrl.trim();
+      final imageUrl = InputSanitizer.safeHttpUrl(meal.imageUrl);
       if (imageUrl.isEmpty) continue;
 
       precacheImage(
@@ -683,10 +683,21 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
       return;
     }
 
+    final safeImageUrl = InputSanitizer.safeHttpUrl(meal.imageUrl);
+    if (safeImageUrl.isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('This recipe image URL could not be verified.'),
+        ),
+      );
+      return;
+    }
+
     await docRef.set({
       'recipeId': meal.id,
       'title': InputSanitizer.cleanText(meal.name, maxLength: 120),
-      'image': meal.imageUrl,
+      'image': safeImageUrl,
       'category': InputSanitizer.cleanText(meal.category, maxLength: 60),
       'source': 'themealdb',
       'addedAt': FieldValue.serverTimestamp(),
@@ -1706,12 +1717,13 @@ class _RemoteMealImage extends StatelessWidget {
       );
     }
 
-    if (imageUrl.trim().isEmpty) {
+    final safeUrl = InputSanitizer.safeHttpUrl(imageUrl);
+    if (safeUrl.isEmpty) {
       return placeholder();
     }
 
     return Image.network(
-      imageUrl,
+      safeUrl,
       fit: fit,
       gaplessPlayback: true,
       filterQuality: FilterQuality.low,

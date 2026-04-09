@@ -10,11 +10,15 @@ service cloud.firestore {
     }
 
     function safeString(value, min, max) {
-      return value is string && value.size() >= min && value.size() <= max;
+      return value is string
+        && value.size() >= min
+        && value.size() <= max
+        && !value.matches('.*[<>`].*')
+        && !value.matches('(?i).*(javascript\\s*:|vbscript\\s*:|data\\s*:\\s*text/html|on[a-z]+\\s*=|<\\s*/?\\s*(script|iframe|svg|img|object|embed)).*');
     }
 
     function optionalString(value, max) {
-      return value == null || (value is string && value.size() <= max);
+      return value == null || safeString(value, 0, max);
     }
 
     function optionalInt(value, min, max) {
@@ -23,6 +27,44 @@ service cloud.firestore {
 
     function optionalList(value, maxItems) {
       return value == null || (value is list && value.size() <= maxItems);
+    }
+
+    function safeHttpsUrl(value, min, max) {
+      return value is string
+        && value.size() >= min
+        && value.size() <= max
+        && value.matches('^https://[^\\s<>"`]+$');
+    }
+
+    function safeStringList(value, minItems, maxItems, maxLength) {
+      return value is list
+        && value.size() >= minItems
+        && value.size() <= maxItems
+        && (value.size() < 1 || safeString(value[0], 1, maxLength))
+        && (value.size() < 2 || safeString(value[1], 1, maxLength))
+        && (value.size() < 3 || safeString(value[2], 1, maxLength))
+        && (value.size() < 4 || safeString(value[3], 1, maxLength))
+        && (value.size() < 5 || safeString(value[4], 1, maxLength))
+        && (value.size() < 6 || safeString(value[5], 1, maxLength))
+        && (value.size() < 7 || safeString(value[6], 1, maxLength))
+        && (value.size() < 8 || safeString(value[7], 1, maxLength))
+        && (value.size() < 9 || safeString(value[8], 1, maxLength))
+        && (value.size() < 10 || safeString(value[9], 1, maxLength))
+        && (value.size() < 11 || safeString(value[10], 1, maxLength))
+        && (value.size() < 12 || safeString(value[11], 1, maxLength))
+        && (value.size() < 13 || safeString(value[12], 1, maxLength))
+        && (value.size() < 14 || safeString(value[13], 1, maxLength))
+        && (value.size() < 15 || safeString(value[14], 1, maxLength))
+        && (value.size() < 16 || safeString(value[15], 1, maxLength))
+        && (value.size() < 17 || safeString(value[16], 1, maxLength))
+        && (value.size() < 18 || safeString(value[17], 1, maxLength))
+        && (value.size() < 19 || safeString(value[18], 1, maxLength))
+        && (value.size() < 20 || safeString(value[19], 1, maxLength))
+        && (value.size() < 21 || safeString(value[20], 1, maxLength))
+        && (value.size() < 22 || safeString(value[21], 1, maxLength))
+        && (value.size() < 23 || safeString(value[22], 1, maxLength))
+        && (value.size() < 24 || safeString(value[23], 1, maxLength))
+        && (value.size() < 25 || safeString(value[24], 1, maxLength));
     }
 
     match /users/{userId} {
@@ -42,7 +84,7 @@ service cloud.firestore {
           && request.resource.data.keys().hasOnly(['recipeId', 'title', 'image', 'category', 'source', 'addedAt'])
           && safeString(request.resource.data.recipeId, 1, 40)
           && safeString(request.resource.data.title, 1, 120)
-          && safeString(request.resource.data.image, 8, 500)
+          && safeHttpsUrl(request.resource.data.image, 8, 500)
           && optionalString(request.resource.data.category, 60)
           && request.resource.data.source == 'themealdb';
       }
@@ -63,13 +105,12 @@ service cloud.firestore {
           ])
           && safeString(request.resource.data.title, 1, 80)
           && optionalString(request.resource.data.description, 180)
-          && request.resource.data.ingredients is list
-          && request.resource.data.ingredients.size() > 0
-          && request.resource.data.ingredients.size() <= 25
+          && safeStringList(request.resource.data.ingredients, 1, 25, 100)
           && safeString(request.resource.data.instructions, 1, 4000)
           && optionalInt(request.resource.data.prepTime, 1, 1440)
           && optionalInt(request.resource.data.servings, 1, 50)
-          && optionalList(request.resource.data.tags, 8);
+          && optionalList(request.resource.data.tags, 8)
+          && safeStringList(request.resource.data.tags, 0, 8, 20);
       }
     }
   }

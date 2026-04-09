@@ -125,11 +125,24 @@ class MealDbService {
 }
 
 class InputSanitizer {
+  static final RegExp _htmlTagPattern = RegExp(
+    r'<[^>]*>',
+    caseSensitive: false,
+    multiLine: true,
+  );
+  static final RegExp _dangerousSchemePattern = RegExp(
+    r'(javascript\s*:|vbscript\s*:|data\s*:\s*text/html)',
+    caseSensitive: false,
+  );
+  static final RegExp _eventHandlerPattern = RegExp(
+    r'\bon[a-z]+\s*=',
+    caseSensitive: false,
+  );
+  static final RegExp _controlCharsPattern = RegExp(r'[\u0000-\u001F\u007F]');
+  static final RegExp _invalidUrlCharPattern = RegExp(r'''[\s<>"'`]''');
+
   static String cleanText(String input, {int maxLength = 120}) {
-    var sanitized = input
-        .replaceAll(RegExp(r'<[^>]*>'), ' ')
-        .replaceAll(RegExp(r'javascript:', caseSensitive: false), '')
-        .replaceAll(RegExp(r'[<>]'), '')
+    var sanitized = _stripDangerousContent(input)
         .replaceAll(RegExp(r'\s+'), ' ')
         .trim();
 
@@ -141,9 +154,7 @@ class InputSanitizer {
   }
 
   static String cleanMultiline(String input, {int maxLength = 4000}) {
-    var sanitized = input
-        .replaceAll(RegExp(r'<[^>]*>'), ' ')
-        .replaceAll(RegExp(r'javascript:', caseSensitive: false), '')
+    var sanitized = _stripDangerousContent(input)
         .replaceAll('\r\n', '\n')
         .replaceAll('\r', '\n')
         .trim();
@@ -159,6 +170,29 @@ class InputSanitizer {
     }
 
     return sanitized;
+  }
+
+  static String safeHttpUrl(String input, {bool allowHttp = false}) {
+    final trimmed = input.trim();
+    if (trimmed.isEmpty) return '';
+
+    if (_dangerousSchemePattern.hasMatch(trimmed) ||
+        _eventHandlerPattern.hasMatch(trimmed) ||
+        _invalidUrlCharPattern.hasMatch(trimmed)) {
+      return '';
+    }
+
+    final uri = Uri.tryParse(trimmed);
+    if (uri == null || uri.host.isEmpty) {
+      return '';
+    }
+
+    final scheme = uri.scheme.toLowerCase();
+    if (scheme != 'https' && !(allowHttp && scheme == 'http')) {
+      return '';
+    }
+
+    return trimmed;
   }
 
   static List<String> splitLines(
@@ -181,6 +215,15 @@ class InputSanitizer {
         .where((tag) => tag.isNotEmpty)
         .take(maxItems)
         .toList();
+  }
+
+  static String _stripDangerousContent(String input) {
+    return input
+        .replaceAll(_htmlTagPattern, ' ')
+        .replaceAll(_dangerousSchemePattern, '')
+        .replaceAll(_eventHandlerPattern, '')
+        .replaceAll(_controlCharsPattern, ' ')
+        .replaceAll(RegExp(r'[<>"`]'), '');
   }
 }
 
