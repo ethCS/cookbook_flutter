@@ -1,32 +1,33 @@
 # CSCI322 Cookbook Flutter Project
 
-A Flutter-based cookbook app for CSCI 322, rebuilt around Firebase and TheMealDB.
+This repository contains my cookbook project for CSCI 322. The app was rebuilt in Flutter and uses Firebase for auth and data storage, with recipe content coming from TheMealDB.
 
-## Submission links
+## Project links
 
 - **GitHub:** `https://github.com/ethCS/cookbook_flutter`
-- **Hosted site:** `https://myfluttercookbook.web.app`
-- **Best viewed on:** **mobile or desktop** (responsive layout supported)
+- **Live site:** `https://myfluttercookbook.web.app`
+- **Responsive on:** mobile and desktop
 
-## Requirement checklist
+## About the app
 
-- ✅ **Use Flutter** — main project lives in `flutter_app/`
-- ✅ **Be hosted** — deployed on Firebase Hosting
-- ✅ **Hit at least one API** — recipe data comes from **TheMealDB**
-- ✅ **Hit a database** — favorites and custom recipes are stored in **Cloud Firestore**
-- ✅ **Reasonable security** — Firestore rules, App Check, CSP headers, and input sanitization are included
-- ✅ **Look like a complete project** — themed UI, responsive layout, auth, search, favorites, and custom recipe management
-- ✅ **Include planned pages and make them accessible** — Home, Search, Recipe Details, Favorites, My Recipes, and Sign In are reachable through the app UI
-- ✅ **Publicly available** — source is hosted on GitHub
+The goal of the project was to make something that feels like a real recipe app instead of a simple class demo. Users can browse meals, search for recipes, save favorites, and add their own recipes after signing in.
 
-## App pages
+## Main pages
 
-- **Home** — featured meals and categories
-- **Search** — query recipes from TheMealDB API
-- **Recipe Details** — ingredients and instructions for each meal
-- **Favorites** — saved meals per signed-in user
-- **My Recipes** — user-created recipes stored in Firestore
-- **Auth** — sign in / sign out flow using Firebase Authentication
+- **Home** for featured meals and categories
+- **Search** for finding recipes from TheMealDB
+- **Recipe Details** for ingredients and cooking steps
+- **Favorites** for saved meals tied to each user
+- **My Recipes** for custom recipes stored in Firestore
+- **Auth** for sign in and sign out
 
-For setup and deployment details, see `flutter_app/README.md`.
+## Tech used
+
+- **Flutter** for the app itself
+- **Firebase Hosting** for deployment
+- **Firebase Authentication** for user sign-in
+- **Cloud Firestore** for favorites and custom recipes
+- **TheMealDB API** for recipe data
+
+If you want the setup and deployment steps, check `flutter_app/README.md`.
 
