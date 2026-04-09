@@ -1,11 +1,11 @@
 {
-    "name": "My Flutter Cookbook",
+    "name": "CSCI322 Flutter Cookbook",
     "short_name": "Cookbook",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A secure Flutter cookbook app that uses TheMealDB and Firebase.",
+    "description": "A secure Flutter cookbook app for CSCI322 that uses TheMealDB and Firebase.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

@@ -4,8 +4,18 @@ A secure Flutter rebuild of the cookbook app using **TheMealDB** and **Firebase*
 
 ## Live site
 
+- GitHub repository: `https://github.com/ethCS/cookbook_flutter`
 - Hosted URL: `https://myfluttercookbook.web.app`
 - Best viewed on: **mobile or desktop** (responsive layout supported)
+
+## Pages included
+
+- `Home`
+- `Search`
+- `Recipe Details`
+- `Favorites`
+- `My Recipes`
+- `Auth`
 
 ## Features
 
